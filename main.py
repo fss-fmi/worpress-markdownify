@@ -1,13 +1,13 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import xml.etree.ElementTree as et
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def tag_eval(tag, tag_depth):
+    for subtag in tag.findall('*'):
+        print('\t' * tag_depth + str(subtag.tag) + ':')
+        tag_eval(subtag, tag_depth + 1)
 
 
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    # Parse XML file
+    tree = et.parse('wp_posts.xml')
+    tag_eval(tree, 0)
