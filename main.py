@@ -1,6 +1,8 @@
+import os
 from xml.etree import ElementTree
 
 import markdownify
+from caseconverter import kebabcase
 from dateutil import parser as date
 
 
@@ -11,7 +13,9 @@ def tag_eval(tag, tag_depth):
 
 
 def parse_post(tag):
-    title = tag.find('title').text
+    raw_title = tag.find('title').text
+    title = raw_title if raw_title else ''
+
     description = tag.find('description').text
     author = tag.find('{http://purl.org/dc/elements/1.1/}creator').text
 
@@ -27,10 +31,24 @@ def parse_post(tag):
 if __name__ == '__main__':
     # Parse XML file
     tree = ElementTree.parse('wp_posts.xml')
-    tag_eval(tree, 0)
 
     # Parse posts from tree
-    parsed_posts = []
+    posts = []
     for post_tag in tree.find('channel').findall('item'):
-        parsed_posts.append(parse_post(post_tag))
-        print(parsed_posts[-1]['content'])
+        posts.append(parse_post(post_tag))
+
+    # Load template
+    template = ''
+    with open('template.md', 'r') as template_file:
+        template = template_file.read()
+
+    # Create markdown files for posts
+    out_dir = 'out'
+    for post in posts:
+        filepath = "{}/{:02d}/{:02d}/{}.md".format(out_dir, post['pub_date'].year, post['pub_date'].month,
+                                                   kebabcase(post['title']))
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+        with open(filepath, "w", encoding="utf-8") as md_file:
+            md_file.write(
+                template.format(post["title"], post["description"], post["author"], post["pub_date"], post["content"]))
