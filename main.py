@@ -1,4 +1,5 @@
 import os
+from shlex import quote
 from xml.etree import ElementTree
 
 import markdownify
@@ -39,7 +40,7 @@ if __name__ == '__main__':
 
     # Load template
     template = ''
-    with open('template.md', 'r') as template_file:
+    with open('news.template', 'r') as template_file:
         template = template_file.read()
 
     # Create markdown files for posts
@@ -51,4 +52,5 @@ if __name__ == '__main__':
 
         with open(filepath, "w", encoding="utf-8") as md_file:
             md_file.write(
-                template.format(post["title"], post["description"], post["author"], post["pub_date"], post["content"]))
+                template.format(title=quote(post["title"]), description=quote(post["description"]),
+                                author=quote(post["author"]), pub_date=post["pub_date"], content=post["content"]))

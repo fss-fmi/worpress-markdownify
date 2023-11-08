@@ -1,0 +1,9 @@
+---
+title: {title}
+description: {description}
+author: {author}
+pubDate: '{pub_date}'
+heroImage: '/fss.jpg'
+---
+
+{content}
